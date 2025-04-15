@@ -12,43 +12,38 @@ final class PaywallViewModel {
     private let productId = "com.universe.premium.weekly"
     private(set) var product: Product?
 
-    func loadProduct() async {
-        do {
-            let storeProducts = try await Product.products(for: [productId])
-            self.product = storeProducts.first
-        } catch {
-            print("Failed to load product: \(error)")
+    func loadProduct(completion: @escaping (Product?) -> Void) {
+        Task {
+            do {
+                let products = try await Product.products(for: [productId])
+                self.product = products.first
+                completion(products.first)
+            } catch {
+                print("Error loading product: \(error)")
+                completion(nil)
+            }
         }
     }
 
-    func purchase() async -> Bool {
+    func purchase(completion: @escaping (Bool) -> Void) {
         guard let product = product else {
-            print("Product is nil")
-            return false
+            completion(false)
+            return
         }
 
-        do {
-            let result = try await product.purchase()
-
-            switch result {
-            case .success(.verified):
-                print("Purchase successful")
-                return true
-            case .success(.unverified(_, let error)):
-                print("Purchase unverified: \(error.localizedDescription)")
-                return false
-            case .userCancelled:
-                print("User cancelled")
-                return false
-            case .pending:
-                print("Purchase pending")
-                return false
-            @unknown default:
-                return false
+        Task {
+            do {
+                let result = try await product.purchase()
+                switch result {
+                case .success(.verified(_)):
+                    completion(true)
+                default:
+                    completion(false)
+                }
+            } catch {
+                print("Purchase failed: \(error)")
+                completion(false)
             }
-        } catch {
-            print("Purchase error: \(error.localizedDescription)")
-            return false
         }
     }
 }

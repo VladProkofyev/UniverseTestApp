@@ -23,7 +23,7 @@ final class OnboardingService: OnboardingServiceProtocol {
             .data(request: URLRequest(url: url))
             .map { data in
                 let decoder = JSONDecoder()
-                let container = try decoder.decode(ResponseContainer.self, from: data)
+                let container = try decoder.decode(ResponseContainer<OnboardingStep>.self, from: data)
                 return container.items
             }
     }

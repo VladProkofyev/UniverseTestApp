@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct ResponseContainer: Decodable {
-    let items: [OnboardingStep]
+struct ResponseContainer<T: Decodable>: Decodable {
+    let items: [T]
 }

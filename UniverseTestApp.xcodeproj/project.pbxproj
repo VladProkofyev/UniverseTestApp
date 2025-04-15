@@ -21,7 +21,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				"/Localized: Resources/LaunchScreen.storyboard",
-				Models/ResponseContainer.swift,
 				Presentation/Onboarding/View/OnboardingViewController.swift,
 				SupportingFiles/Info.plist,
 			);

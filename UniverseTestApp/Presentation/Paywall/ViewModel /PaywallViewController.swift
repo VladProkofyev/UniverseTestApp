@@ -10,6 +10,7 @@ import SnapKit
 
 final class PaywallViewController: UIViewController {
 
+    private let viewModel = PaywallViewModel()
 
     private let closeButton: UIButton = {
         let button = UIButton(type: .system)
@@ -109,15 +110,19 @@ final class PaywallViewController: UIViewController {
 
     private let bottomContainer = UIView()
 
-    // MARK: - Life Cycle
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupActions()
+
+        viewModel.loadProduct { [weak self] product in
+            guard let self = self else { return }
+            if product == nil {
+                print("Product loading failed")
+            }
+        }
     }
 
-    // MARK: - Setup
 
     private func setupUI() {
         view.backgroundColor = .white
@@ -177,20 +182,23 @@ final class PaywallViewController: UIViewController {
         closeButton.addTarget(self, action: #selector(didTapClose), for: .touchUpInside)
     }
 
-    // MARK: - Actions
 
     @objc private func didTapClose() {
         dismiss(animated: true, completion: nil)
     }
 
     @objc private func didTapStart() {
-        let alert = UIAlertController(
-            title: "Almost there!",
-            message: "You now have access to premium features.",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+        viewModel.purchase { [weak self] success in
+            DispatchQueue.main.async {
+                let alert = UIAlertController(
+                    title: success ? "Almost there!" : "Oops!",
+                    message: success ? "You now have access to premium features." : "The purchase was cancelled or failed.",
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                self?.present(alert, animated: true)
+            }
+        }
     }
 }
 
