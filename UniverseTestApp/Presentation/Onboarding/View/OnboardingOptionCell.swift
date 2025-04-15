@@ -34,7 +34,9 @@ final class OnboardingOptionCell: UITableViewCell {
         contentView.addSubview(container)
 
         container.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
+            $0.top.equalToSuperview()
+            $0.bottom.equalToSuperview()
+            $0.left.right.equalToSuperview().inset(2)
         }
 
         optionLabel.font = .systemFont(ofSize: 16)
@@ -55,6 +57,7 @@ final class OnboardingOptionCell: UITableViewCell {
         container.backgroundColor = isSelected ? UIColor(hex: "#47BE9A") : .white
     }
 }
+
 
 
 

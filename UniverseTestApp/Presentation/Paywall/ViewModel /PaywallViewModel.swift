@@ -1,18 +1,16 @@
 //
-//  ProductService.swift
+//  PaywallViewModel.swift
 //  UniverseTestApp
 //
-//  Created by Vlad Prokofiev  on 09.04.2025.
+//  Created by Vlad Prokofiev  on 15.04.2025.
 //
 
 import Foundation
 import StoreKit
 
-final class ProductService: ObservableObject {
-    static let shared = ProductService()
-    @Published var product: Product?
-
+final class PaywallViewModel {
     private let productId = "com.universe.premium.weekly"
+    private(set) var product: Product?
 
     func loadProduct() async {
         do {
@@ -24,25 +22,32 @@ final class ProductService: ObservableObject {
     }
 
     func purchase() async -> Bool {
-        guard let product = product else { return false }
+        guard let product = product else {
+            print("Product is nil")
+            return false
+        }
 
         do {
             let result = try await product.purchase()
+
             switch result {
-            case .success(.verified(_)):
+            case .success(.verified):
                 print("Purchase successful")
                 return true
-            case .success(.unverified(_, _)):
-                print("Purchase unverified")
+            case .success(.unverified(_, let error)):
+                print("Purchase unverified: \(error.localizedDescription)")
                 return false
             case .userCancelled:
                 print("User cancelled")
                 return false
-            default:
+            case .pending:
+                print("Purchase pending")
+                return false
+            @unknown default:
                 return false
             }
         } catch {
-            print("Purchase error: \(error)")
+            print("Purchase error: \(error.localizedDescription)")
             return false
         }
     }

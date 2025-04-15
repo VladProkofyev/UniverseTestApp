@@ -20,8 +20,9 @@
 		29347EE72DA6D0EC00DF1C02 /* Exceptions for "UniverseTestApp" folder in "UniverseTestApp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"/Localized: LaunchScreen.storyboard",
-				SceneDelegate.swift,
+				"/Localized: Resources/LaunchScreen.storyboard",
+				Models/ResponseContainer.swift,
+				Presentation/Onboarding/View/OnboardingViewController.swift,
 				SupportingFiles/Info.plist,
 			);
 			target = 29347ED42DA6D0E900DF1C02 /* UniverseTestApp */;
@@ -57,7 +58,6 @@
 			isa = PBXGroup;
 			children = (
 				29347ED72DA6D0E900DF1C02 /* UniverseTestApp */,
-				29347F052DA6D5E900DF1C02 /* Frameworks */,
 				29347ED62DA6D0E900DF1C02 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -68,13 +68,6 @@
 				29347ED52DA6D0E900DF1C02 /* UniverseTestApp.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		29347F052DA6D5E900DF1C02 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

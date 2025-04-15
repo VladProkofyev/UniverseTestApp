@@ -31,11 +31,7 @@ final class OnboardingViewModel {
             .map { steps in
                 print("Fetched steps: \(steps.map(\.question))")
 
-                let ordered = [
-                    steps.first(where: { $0.id == 1 }),
-                    steps.first(where: { $0.id == 2 }),
-                    steps.first(where: { $0.id == 3 })
-                ].compactMap { $0 }
+                let ordered = steps.sorted { $0.id < $1.id }
 
                 print("Ordered steps: \(ordered.map(\.question))")
 

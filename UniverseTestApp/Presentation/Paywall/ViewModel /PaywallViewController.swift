@@ -10,6 +10,7 @@ import SnapKit
 
 final class PaywallViewController: UIViewController {
 
+
     private let closeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "xmark"), for: .normal)
@@ -37,18 +38,24 @@ final class PaywallViewController: UIViewController {
 
     private let subtitleLabel: UILabel = {
         let label = UILabel()
-        let fullText = "Try 7 days for free\n then $6.99 per week, auto-renewable"
+        label.numberOfLines = 0
+        label.textAlignment = .left
+
+        let fullText = "Try 7 days for free\nthen $6.99 per week, auto-renewable"
         let attributed = NSMutableAttributedString(string: fullText, attributes: [
             .font: UIFont.systemFont(ofSize: 16),
             .foregroundColor: UIColor.darkGray
         ])
+
         if let range = fullText.range(of: "$6.99") {
             let nsRange = NSRange(range, in: fullText)
-            attributed.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: 16), range: nsRange)
+            attributed.addAttributes([
+                .font: UIFont.boldSystemFont(ofSize: 16),
+                .foregroundColor: UIColor.black
+            ], range: nsRange)
         }
+
         label.attributedText = attributed
-        label.textAlignment = .left
-        label.numberOfLines = 0
         return label
     }()
 
@@ -72,10 +79,15 @@ final class PaywallViewController: UIViewController {
         textView.textContainerInset = .zero
         textView.textContainer.lineFragmentPadding = 0
 
-        let fullText = "By continuing you accept our: Terms of Use, Privacy Policy, Subscription Terms"
+        let fullText = "By continuing you accept our:\nTerms of Use, Privacy Policy, Subscription Terms"
         let attributed = NSMutableAttributedString(string: fullText, attributes: [
-            .font: UIFont.systemFont(ofSize: 12),
-            .foregroundColor: UIColor.darkGray
+            .font: UIFont.systemFont(ofSize: 13),
+            .foregroundColor: UIColor.darkGray,
+            .paragraphStyle: {
+                let style = NSMutableParagraphStyle()
+                style.alignment = .center
+                return style
+            }()
         ])
 
         let links: [String: String] = [
@@ -95,6 +107,8 @@ final class PaywallViewController: UIViewController {
         return textView
     }()
 
+    private let bottomContainer = UIView()
+
     // MARK: - Life Cycle
 
     override func viewDidLoad() {
@@ -108,7 +122,14 @@ final class PaywallViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .white
 
-        [imageView, titleLabel, subtitleLabel, startButton, termsTextView, closeButton].forEach { view.addSubview($0) }
+        view.addSubview(imageView)
+        view.addSubview(titleLabel)
+        view.addSubview(subtitleLabel)
+        view.addSubview(closeButton)
+        view.addSubview(bottomContainer)
+
+        bottomContainer.addSubview(startButton)
+        bottomContainer.addSubview(termsTextView)
 
         imageView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
@@ -125,28 +146,35 @@ final class PaywallViewController: UIViewController {
             make.leading.trailing.equalToSuperview().inset(24)
         }
 
-        startButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(24)
-            make.height.equalTo(52)
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(32)
-        }
-
-        termsTextView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(24)
-            make.top.equalTo(startButton.snp.bottom).offset(16)
-            make.bottom.lessThanOrEqualTo(view.safeAreaLayoutGuide).inset(16)
-        }
-
         closeButton.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(16)
             make.trailing.equalToSuperview().inset(16)
             make.size.equalTo(24)
         }
+
+        bottomContainer.snp.makeConstraints { make in
+            make.left.right.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
+
+        startButton.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(16)
+            make.leading.trailing.equalToSuperview().inset(24)
+            make.height.equalTo(52)
+        }
+
+        termsTextView.snp.makeConstraints { make in
+            make.top.equalTo(startButton.snp.bottom).offset(16)
+            make.leading.trailing.equalToSuperview().inset(32)
+            make.bottom.lessThanOrEqualTo(view.safeAreaLayoutGuide.snp.bottom).inset(24)
+            make.centerX.equalToSuperview()
+        }
     }
 
     private func setupActions() {
-        closeButton.addTarget(self, action: #selector(didTapClose), for: .touchUpInside)
+        startButton.isEnabled = true
         startButton.addTarget(self, action: #selector(didTapStart), for: .touchUpInside)
+        closeButton.addTarget(self, action: #selector(didTapClose), for: .touchUpInside)
     }
 
     // MARK: - Actions
@@ -156,15 +184,13 @@ final class PaywallViewController: UIViewController {
     }
 
     @objc private func didTapStart() {
-        print("Start Now tapped — simulating subscription")
-        UserDefaults.standard.set(true, forKey: "isPremium")
-
-        let alert = UIAlertController(title: "Almost there!", message: "You now have access to premium features.", preferredStyle: .alert)
+        let alert = UIAlertController(
+            title: "Almost there!",
+            message: "You now have access to premium features.",
+            preferredStyle: .alert
+        )
         alert.addAction(UIAlertAction(title: "OK", style: .default))
-
         present(alert, animated: true)
-
-        print("Subscription simulated and alert shown")
     }
 }
 
